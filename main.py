@@ -113,3 +113,53 @@ for row in range(enemy_rows):
 enemy_dx = 2
 enemy_dy = 10
 enemy_delay = 0.02
+
+
+def fire_bullet():
+    for bullet in bullets:
+        if not bullet.active:
+            bullet.fire(player.xcor(), player.ycor())
+            break
+
+# Collision detection
+def is_collision(obj1, obj2):
+    distance = math.sqrt((obj1.xcor() - obj2.xcor())**2 + (obj1.ycor() - obj2.ycor())**2)
+    return distance < 15
+
+# Alien Bullet setup
+class AlienBullet(turtle.Turtle):
+    def __init__(self):
+        super().__init__()
+        self.shape("triangle")
+        self.color("red")
+        self.penup()
+        self.speed(0)
+        self.setheading(270)  # Bullet moves downward
+        self.shapesize(0.5, 0.5)
+        self.hideturtle()
+        self.active = False
+
+    def fire(self, x, y):
+        if not self.active:
+            self.setposition(x, y - 10)
+            self.showturtle()
+            self.active = True
+
+    def move(self):
+        if self.active:
+            self.sety(self.ycor() - 15)
+            if self.ycor() < -300:
+                self.hideturtle()
+                self.active = False
+
+alien_bullets = [AlienBullet() for _ in range(5)]  # Pool of alien bullets
+
+def alien_fire_bullet():
+    if enemies:
+        # Select up to 4 random aliens (or 1 if only 1 alien remains)
+        firing_aliens = random.sample(enemies, min(4, len(enemies)))
+        for enemy in firing_aliens:
+            for bullet in alien_bullets:
+                if not bullet.active:
+                    bullet.fire(enemy.xcor(), enemy.ycor())
+                    break
