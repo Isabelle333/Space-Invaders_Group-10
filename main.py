@@ -163,3 +163,50 @@ def alien_fire_bullet():
                 if not bullet.active:
                     bullet.fire(enemy.xcor(), enemy.ycor())
                     break
+                
+
+# Game over and winning messages
+def display_message(text):
+    message_pen = turtle.Turtle()
+    message_pen.speed(0)
+    message_pen.color("white")
+    message_pen.penup()
+    message_pen.hideturtle()
+    message_pen.setposition(0, 0)
+    message_pen.write(text, align="center", font=("Arial", 36, "normal"))
+    message_pen.setposition(0, -40)
+    message_pen.write(f"Final Score: {score}", align="center", font=("Arial", 24, "normal"))
+    wn.update()
+    time.sleep(3)
+    
+
+# Movement control variables
+player_direction = 0  # -1 for left, 1 for right, 0 for no movement
+
+# Functions to start and stop movement
+def move_left_start():
+    global player_direction
+    player_direction = -1  # Move left
+
+def move_right_start():
+    global player_direction
+    player_direction = 1  # Move right
+
+def stop_movement():
+    global player_direction
+    player_direction = 0  # Stop moving
+
+# Continuous movement update
+def update_player_position():
+    if player_direction == -1:  # Moving left
+        player.setx(max(player.xcor() - player.move_speed, -280))
+    elif player_direction == 1:  # Moving right
+        player.setx(min(player.xcor() + player.move_speed, 280))
+ 
+# Keyboard bindings for continuous movement
+wn.listen()
+wn.onkeypress(move_left_start, "Left")    # Start moving left
+wn.onkeypress(move_right_start, "Right")  # Start moving right
+wn.onkeyrelease(stop_movement, "Left")    # Stop moving left
+wn.onkeyrelease(stop_movement, "Right")   # Stop moving right
+wn.onkeypress(fire_bullet, "space")       # Fire bullet
