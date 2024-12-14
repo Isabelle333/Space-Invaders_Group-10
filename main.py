@@ -210,3 +210,43 @@ wn.onkeypress(move_right_start, "Right")  # Start moving right
 wn.onkeyrelease(stop_movement, "Left")    # Stop moving left
 wn.onkeyrelease(stop_movement, "Right")   # Stop moving right
 wn.onkeypress(fire_bullet, "space")       # Fire bullet
+
+
+
+# Fire bullets from random aliens every 4 seconds
+    current_time = time.time()
+    if current_time - last_shot_time >= 4:  # Fire bullets every 4 seconds
+        alien_fire_bullet()
+        last_shot_time = current_time
+    
+    adjust_enemy_speed()
+
+    # Move enemies
+    all_enemies_reversed = False
+    for enemy in enemies:
+        enemy.move(enemy_dx, 0)
+
+        # Reverse direction and move down if hitting the boundary
+        if enemy.xcor() > 280 or enemy.xcor() < -280:
+            all_enemies_reversed = True
+
+        # Check for collision with player
+        if is_collision(player, enemy):
+            game_over = True
+            display_message("GAME OVER")
+            break
+
+    if game_over:
+        break
+
+    if all_enemies_reversed:
+        enemy_dx *= -1
+        for enemy in enemies:
+            enemy.move(0, -enemy_dy)
+            if enemy.ycor() < -250:  # Check if enemies reach player
+                game_over = True
+                display_message("GAME OVER")
+                break
+
+    if game_over:
+        break
