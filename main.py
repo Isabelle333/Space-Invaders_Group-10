@@ -250,3 +250,52 @@ wn.onkeypress(fire_bullet, "space")       # Fire bullet
 
     if game_over:
         break
+
+
+
+    def move(self):
+        if self.active:
+            self.sety(self.ycor() + 15)
+            if self.ycor() > 275:
+                self.hideturtle()
+                self.active = False
+
+bullets = [Bullet() for _ in range(5)]  # Pool of bullets
+
+# Enemy setup
+class Enemy(turtle.Turtle):
+    def __init__(self, x, y):
+        super().__init__()
+        self.shape("alien.gif")  # Set the alien image
+        self.penup()
+        self.speed(0)
+        self.setposition(x, y)
+
+    def move(self, dx, dy):
+        self.setx(self.xcor() + dx)
+        self.sety(self.ycor() + dy)
+
+enemies = []
+enemy_rows = 5
+enemy_cols = 10
+enemy_start_x = -225
+enemy_start_y = 250
+enemy_spacing_x = 50
+enemy_spacing_y = 40
+
+for row in range(enemy_rows):
+    for col in range(enemy_cols):
+        x = enemy_start_x + (col * enemy_spacing_x)
+        y = enemy_start_y - (row * enemy_spacing_y)
+        enemies.append(Enemy(x, y))
+
+enemy_dx = 2
+enemy_dy = 10
+enemy_delay = 0.02
+
+
+def fire_bullet():
+    for bullet in bullets:
+        if not bullet.active:
+            bullet.fire(player.xcor(), player.ycor())
+            break
