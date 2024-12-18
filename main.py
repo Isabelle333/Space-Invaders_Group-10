@@ -212,8 +212,55 @@ wn.onkeyrelease(stop_movement, "Right")   # Stop moving right
 wn.onkeypress(fire_bullet, "space")       # Fire bullet
 
 
+# Function to adjust enemy speed
+def adjust_enemy_speed():
+    global enemy_delay
+    remaining_enemies = len(enemies)
 
-# Fire bullets from random aliens every 4 seconds
+    if remaining_enemies > 40:
+        enemy_delay = 0.02
+    elif remaining_enemies > 30:
+        enemy_delay = 0.015
+    elif remaining_enemies > 20:
+        enemy_delay = 0.011
+    elif remaining_enemies > 10:
+        enemy_delay = 0.006
+    elif remaining_enemies > 1:
+        enemy_delay = 0.003
+    else: 
+        enemy_delay = 0.001
+
+# Main game loop
+game_over = False
+last_shot_time = time.time()  # Timer to control alien shooting
+
+while not game_over:
+    wn.update()
+    
+    # Update player position based on movement direction
+    update_player_position()
+
+    # Move player bullets
+    for bullet in bullets:
+        bullet.move()
+
+    # Move alien bullets
+    for bullet in alien_bullets:
+        bullet.move()
+
+        # Check for collision with player
+        if is_collision(bullet, player):
+            bullet.hideturtle()
+            bullet.active = False
+            player.hideturtle()  # Hide the player
+            game_over = True
+            display_message("GAME OVER")
+            break
+
+    if game_over:
+        break
+
+    # Fire bullets from random aliens every 4 seconds
     current_time = time.time()
     if current_time - last_shot_time >= 4:  # Fire bullets every 4 seconds
         alien_fire_bullet()
@@ -251,51 +298,25 @@ wn.onkeypress(fire_bullet, "space")       # Fire bullet
     if game_over:
         break
 
-
-
-    def move(self):
-        if self.active:
-            self.sety(self.ycor() + 15)
-            if self.ycor() > 275:
-                self.hideturtle()
-                self.active = False
-
-bullets = [Bullet() for _ in range(5)]  # Pool of bullets
-
-# Enemy setup
-class Enemy(turtle.Turtle):
-    def __init__(self, x, y):
-        super().__init__()
-        self.shape("alien.gif")  # Set the alien image
-        self.penup()
-        self.speed(0)
-        self.setposition(x, y)
-
-    def move(self, dx, dy):
-        self.setx(self.xcor() + dx)
-        self.sety(self.ycor() + dy)
-
-enemies = []
-enemy_rows = 5
-enemy_cols = 10
-enemy_start_x = -225
-enemy_start_y = 250
-enemy_spacing_x = 50
-enemy_spacing_y = 40
-
-for row in range(enemy_rows):
-    for col in range(enemy_cols):
-        x = enemy_start_x + (col * enemy_spacing_x)
-        y = enemy_start_y - (row * enemy_spacing_y)
-        enemies.append(Enemy(x, y))
-
-enemy_dx = 2
-enemy_dy = 10
-enemy_delay = 0.02
-
-
-def fire_bullet():
+    # Check for bullet collisions with enemies
     for bullet in bullets:
-        if not bullet.active:
-            bullet.fire(player.xcor(), player.ycor())
-            break
+        if bullet.active:
+            for enemy in enemies:
+                if is_collision(bullet, enemy):
+                    bullet.hideturtle()
+                    bullet.active = False
+                    enemy.hideturtle()
+                    enemies.remove(enemy)
+                    score
+                    score += 10
+                    update_score()
+                    break
+
+    # Check if all enemies are eliminated
+    if not enemies:
+        display_message("YOU WON!")
+        game_over = True
+
+    time.sleep(enemy_delay)
+
+
